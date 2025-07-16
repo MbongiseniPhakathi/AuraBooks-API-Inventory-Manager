@@ -1,0 +1,158 @@
+{
+	"info": {
+		"_postman_id": "7119e857-a42a-4775-9daa-54219e990fe7",
+		"name": "AuraBooks API Tester",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44098144"
+	},
+	"item": [
+		{
+			"name": "Books Inventory",
+			"item": [
+				{
+					"name": "GET All Books",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "GET Books By ID",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "POST Add New Book",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201 Created\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body contains a new ID\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property('id');\r",
+									"    pm.expect(response.id).to.be.a('number'); \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response title matches the request title\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    const requestBody = JSON.parse(pm.request.body.raw);\r",
+									"    pm.expect(response.title).to.eql(requestBody.title);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"if (response && response.id) {\r",
+									"    pm.environment.set(\"lastCreatedBookId\", response.id);\r",
+									"    console.log(\"Saved lastCreatedBookId: \" + response.id); \r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"title\": \"A Postman Project: A journey into API\",\r\n   \"body\" : \" A tale of discovery and mastery in the world of Application\",\r\n   \"userID\": 101,\r\n   \"genre\": \"Education\",\r\n   \"price\": 40.00\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/posts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Update Book Details",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": {{lastCreatedBookId}},\r\n    \"title\": \"The Postman Adventure: A Journey into APIs (Revised Edition)\",\r\n    \"body\": \"An updated and expanded tale of discovery and mastery in the world of Application Programming Interfaces, featuring new chapters on advanced testing.\",\r\n    \"userId\": 101,\r\n    \"genre\": \"Education\",\r\n    \"price\": 44.99,\r\n    \"status\": \"In Stock - New Edition\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/posts/{{lastCreatedBookId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts",
+								"{{lastCreatedBookId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Remove Book",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 OK or 204 No Content\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,204]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body is empty or an empty object\", function(){\r",
+									"    pm.expect(pm.response.json()).to.be.empty;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/posts/{{BookId}}?bookId=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts",
+								"{{BookId}}"
+							],
+							"query": [
+								{
+									"key": "bookId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
